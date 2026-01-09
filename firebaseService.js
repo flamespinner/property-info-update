@@ -1,4 +1,4 @@
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js";
+import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js";
 
 /**
  * Save property data to Firebase
@@ -45,4 +45,16 @@ function getAllPropertyData(callback) {
     });
 }
 
-export { writePropertyData, getPropertyDataByState, getAllPropertyData };
+function updatePropertyData(state, property, partialData) {
+    const db = getDatabase();
+    const propertyRef = ref(db, `properties/${state}/${property}`);
+    return update(propertyRef, partialData)
+        .then(() => {
+            console.log(`Property data for ${property} in ${state} updated successfully.`);
+        })
+        .catch((error) => {
+            console.error("Error updating property data:", error);
+        });
+}
+
+export { writePropertyData, updatePropertyData, getPropertyDataByState, getAllPropertyData };

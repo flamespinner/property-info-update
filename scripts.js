@@ -1,4 +1,4 @@
-import { writePropertyData, getPropertyDataByState } from "./firebaseService.js";
+import { writePropertyData, getPropertyDataByState, updatePropertyData } from "./firebaseService.js";
 
 // Add this function at the start of your file
 function showAlert(message, isSuccess = true) {
@@ -66,6 +66,10 @@ function populateExistingData() {
                             const nameField = propertyElement.querySelector(`#${escapeCSSSelector(role)}-name`);
                             if (nameField && info.name) {
                                 nameField.value = info.name;
+                                // Log when loading accountant entries for visibility during dev
+                                if (role.toLowerCase().includes('accountant')) {
+                                    console.log(`Loaded accountant for ${propertyName}: ${info.name}`);
+                                }
                             }
                             
                             // Handle email field
@@ -124,11 +128,11 @@ document.getElementById("submit-button").addEventListener("click", async () => {
     let allSaved = true;
     let errorMessages = [];
 
-    // Create a promise for each property save
+    // Create a promise for each property save (use update to avoid overwriting unexpected fields)
     const savePromises = Object.entries(data).map(([propertyName, propertyData]) => {
-        return writePropertyData(state, propertyName, propertyData)
+        return updatePropertyData(state, propertyName, propertyData)
             .then(() => {
-                console.log(`Data for ${propertyName} in ${state} saved successfully.`);
+                console.log(`Data for ${propertyName} in ${state} updated successfully.`);
             })
             .catch((error) => {
                 allSaved = false;
